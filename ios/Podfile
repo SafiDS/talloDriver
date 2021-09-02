@@ -1,0 +1,36 @@
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+platform :ios, '10.0'
+
+target 'Tallo' do
+  config = use_native_modules!
+
+  use_react_native!(:path => config["reactNativePath"])
+
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
+  pod 'react-native-geolocation', :path => '../node_modules/@react-native-community/geolocation'
+
+  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+
+  pod 'RNSound', :path => '../node_modules/react-native-sound'
+
+  target 'TalloTests' do
+    inherit! :complete
+    # Pods for testing
+  end
+
+
+
+
+end
+
+target 'Tallo-tvOS' do
+  # Pods for Tallo-tvOS
+
+  target 'Tallo-tvOSTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+end
