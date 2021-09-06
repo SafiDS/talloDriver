@@ -89,7 +89,8 @@ export default function MoreDetails({navigation}) {
         if (img == 'true') {
             navigate('RiderStatusOnline1');
         } else {
-            navigate('Dashboard');
+            navigation.goBack();
+            //navigate('Dashboard');
         }
 
     }
@@ -193,7 +194,12 @@ export default function MoreDetails({navigation}) {
                             fontFamily: themes.fontFamily.Bold,
                         }]}>{lang.Total_earnings[LangId]}</Text>
                         <Text
-                            style={{color: 'white', fontFamily: themes.fontFamily.Bold, fontSize: 16, marginLeft: 160}}> 4578.00</Text>
+                            style={{
+                                color: 'white',
+                                fontFamily: themes.fontFamily.Bold,
+                                fontSize: 16,
+                                marginLeft: 160
+                            }}> 4578.00</Text>
                     </View>
 
 
@@ -224,8 +230,10 @@ export default function MoreDetails({navigation}) {
                             fontFamily: themes.fontFamily.Bold,
                             marginLeft: 20,
                         }}>234</Text>
-                        <Text style={{marginRight: 10, fontSize: 16, color: 'white',
-                            fontFamily: themes.fontFamily.Normal}}>{lang.total_rides[LangId]}</Text>
+                        <Text style={{
+                            marginRight: 10, fontSize: 16, color: 'white',
+                            fontFamily: themes.fontFamily.Normal
+                        }}>{lang.total_rides[LangId]}</Text>
                     </View>
                     <View style={{justifyContent: 'space-between', margin: 10, marginRight: 25}}>
                         <Text style={{
@@ -236,8 +244,10 @@ export default function MoreDetails({navigation}) {
                             marginBottom: 5,
                             marginLeft: 20,
                         }}>4.5</Text>
-                        <Text style={{marginRight: 10, fontSize: 16, color: 'white',
-                            fontFamily: themes.fontFamily.Normal}}>{lang.total_rating[LangId]}</Text>
+                        <Text style={{
+                            marginRight: 10, fontSize: 16, color: 'white',
+                            fontFamily: themes.fontFamily.Normal
+                        }}>{lang.total_rating[LangId]}</Text>
                     </View>
 
                 </View>
@@ -252,8 +262,10 @@ export default function MoreDetails({navigation}) {
                                       }}>
 
                         <FontAwesome5 name="gift" size={22} color="black"/>
-                        <Text style={{ fontSize: 16,
-                            fontFamily: themes.fontFamily.Normal}}>{lang.refer_and_earn[LangId]}</Text>
+                        <Text style={{
+                            fontSize: 16,
+                            fontFamily: themes.fontFamily.Normal
+                        }}>{lang.refer_and_earn[LangId]}</Text>
 
 
                         <MaterialIcons name="keyboard-arrow-right" size={24} color="black"/>
@@ -261,22 +273,27 @@ export default function MoreDetails({navigation}) {
                     </TouchableOpacity>
                     <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 30}}
                                       onPress={() => {
-                                          navigateScreen(navigation, 'EarningMore');
+                                          navigateScreen(navigation, 'Earning');
                                       }}>
 
                         <MaterialCommunityIcons name="wallet-outline" size={22} color="black"/>
-                        <Text style={{ fontSize: 16,
-                            fontFamily: themes.fontFamily.Normal}}>{lang.earnings[LangId]}</Text>
+                        <Text style={{
+                            fontSize: 16,
+                            fontFamily: themes.fontFamily.Normal
+                        }}>{lang.earnings[LangId]}</Text>
                         <MaterialIcons name="keyboard-arrow-right" size={24} color="black"/>
 
                     </TouchableOpacity>
                     <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 30}}
                                       onPress={() => {
-                                          navigateScreen(navigation, 'HistoryMore');
+                                          navigateScreen(navigation, 'BookingHistory');
                                       }}>
 
                         <Ionicons name="car-outline" size={22} color="black"/>
-                        <Text style={{ fontSize: 16,fontFamily: themes.fontFamily.Normal}}>{lang.your_rides[LangId]}</Text>
+                        <Text style={{
+                            fontSize: 16,
+                            fontFamily: themes.fontFamily.Normal
+                        }}>{lang.your_rides[LangId]}</Text>
                         <MaterialIcons name="keyboard-arrow-right" size={24} color="black"/>
 
                     </TouchableOpacity>
@@ -288,7 +305,10 @@ export default function MoreDetails({navigation}) {
                                       }}
                     >
                         <Ionicons name="help-circle" size={22} color="black"/>
-                        <Text style={{ fontSize: 16,fontFamily: themes.fontFamily.Normal}}>{lang.help_support[LangId]}</Text>
+                        <Text style={{
+                            fontSize: 16,
+                            fontFamily: themes.fontFamily.Normal
+                        }}>{lang.help_support[LangId]}</Text>
                         <MaterialIcons name="keyboard-arrow-right" size={24} color="black"/>
                     </TouchableOpacity>
 
@@ -297,7 +317,10 @@ export default function MoreDetails({navigation}) {
                                           navigateScreen(navigation, 'RiderDetails');
                                       }}>
                         <Ionicons name="help-circle" size={22} color="black"/>
-                        <Text style={{fontSize: 16,fontFamily: themes.fontFamily.Normal}}>{lang.rider_details[LangId]}</Text>
+                        <Text style={{
+                            fontSize: 16,
+                            fontFamily: themes.fontFamily.Normal
+                        }}>{lang.rider_details[LangId]}</Text>
                         <MaterialIcons name="keyboard-arrow-right" size={24} color="black"/>
                     </TouchableOpacity>
 
@@ -306,7 +329,7 @@ export default function MoreDetails({navigation}) {
                                       onPress={logout}
                     >
                         <MaterialCommunityIcons name="logout" size={24} color="black"/>
-                        <Text style={{fontSize: 16,fontFamily: themes.fontFamily.Normal}}>{lang.logout[LangId]}</Text>
+                        <Text style={{fontSize: 16, fontFamily: themes.fontFamily.Normal}}>{lang.logout[LangId]}</Text>
                         <MaterialIcons name="keyboard-arrow-right" size={22} color="black"/>
                     </TouchableOpacity>
 

@@ -3,35 +3,34 @@ import {
     StyleSheet,
     Text,
     View,
-    TextInput,
     TouchableOpacity,
     Alert,
     Image,
-    BackHandler,
-    ScrollView,
     StatusBar,
-    Modal,
+    Modal, FlatList, ScrollView,
 } from 'react-native';
 import {themes} from '../../utils';
-import {useDispatch} from 'react-redux';
-import {Button, Popup, Input} from '../../components';
-// import Gender from "../../components/Gender";
-import Appicon from '../../components/Appicon';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {navigate, navigateScreen} from '../../Tools/NavigationServices';
+import {navigate} from '../../Tools/NavigationServices';
 import {getItemFromStorage} from '../../utils/AccessStorage';
 import lang from '../../language/lang_values';
+import moment from "moment";
 
 
 export default function Earning({navigation}) {
 
 
     const [LangId, setLangId] = useState('');
+    const [riderInfo, setRiderInfo] = useState({
+        rider_id: 0,
+        to_company: 0,
+        from_company: 0,
+    });
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [riderEarnings, setRiderEarnings] = useState([]);
 
     React.useEffect(() => {
-        getdata();
+        refreshPage()
         const unsubscribe = navigation.addListener('focus', () =>
             refreshPage(),
         );
@@ -41,7 +40,34 @@ export default function Earning({navigation}) {
         };
     }, []);
 
-    async function getdata() {
+    const getEarningList = async () => {
+        let bodyData = {
+            "rider_id": "1"
+        };
+        fetch(
+            'https://www.tallo.in/was/rider_info',
+            {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bodyData),
+            },
+        )
+            .then((response) => {
+                return response.json();
+            })
+            .then(data => {
+                console.log('Rider Info Response', data);
+                if (data['statusCode'] == 'SUCCESS') {
+                    setRiderEarnings(data.rider_earnings)
+                    setRiderInfo(data.rider_info)
+                }
+            });
+    }
+
+    const getdata = async () => {
         var lanid = await getItemFromStorage('LangId');
         //alert("useeffect"+lanid)
         if (lanid != '') {
@@ -50,22 +76,12 @@ export default function Earning({navigation}) {
         }
     }
 
-    function refreshPage() {
+    const refreshPage = () => {
         getdata();
+        getEarningList()
     }
 
-    function _signUp() {
-
-        var request = {
-            //   "Name": Name,
-            //   "Date": Date,
-            //   "Email": Email,
-            //   "City": City,
-            //   "gender": Gender,
-            'phone': '1234567890',
-            'navigation': navigation,
-        };
-        // dispatch({ type: 'RIDER_STATUS_ONLINE1', payload: request })
+    const _signUp = () => {
         setModalVisible(!modalVisible);
     }
 
@@ -73,15 +89,58 @@ export default function Earning({navigation}) {
     StatusBar.setHidden(true);
 
 
-    async function Goback() {
+    const Goback = async () => {
         var img = await getItemFromStorage('loginImage');
         if (img == 'true') {
             navigate('RiderStatusOnline1');
         } else {
-            navigate('Dashboard');
+            navigation.goBack()
         }
-
     }
+
+    const renderItem = ({item}) => {
+        console.log(item, "item")
+        return (
+            <View style={styles.item}>
+                <View style={styles.cardInfoContainer}>
+                    <View style={styles.rowView}>
+                        <View style={styles.infoView}>
+                            <View style={styles.pickUpView}>
+                                <Text style={[styles.buttontext, {color: 'black', fontSize: 18}]}>
+                                    {item.booking_number}
+                                </Text>
+                                <Text style={[styles.buttontext, {
+                                    color: 'gray',
+                                    fontFamily: themes.fontFamily.Normal,
+                                    fontSize: 18
+                                }]}>
+                                    {item.date}
+                                </Text>
+                            </View>
+                            <Text style={[styles.buttontext, {
+                                color: 'gray',
+                                fontFamily: themes.fontFamily.Normal,
+                                fontSize: 16,
+                                marginTop: 5
+                            }]}>
+                                {`₹${item?.amount ? item.amount : '0'}`}
+                            </Text>
+                            <Text
+                                numberOfLines={2}
+                                style={[styles.buttontext, {
+                                    color: 'gray',
+                                    fontFamily: themes.fontFamily.Normal,
+                                    fontSize: 16,
+                                    marginTop: 5
+                                }]}>
+                                {item.description}
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -107,66 +166,39 @@ export default function Earning({navigation}) {
                     color: 'black',
                     marginTop: 10,
                     marginLeft: 80,
-                }}>{lang.riderId_TA6543[LangId]}  </Text>
+                }}>
+                    {`${lang.riderId_TA6543[LangId]} ${riderInfo.rider_id}`}
+                </Text>
             </View>
 
-
-            <View style={{flexDirection: 'row', marginTop: 20}}>
-
-                <TouchableOpacity style={[styles.loginBtnn, {width: '30%'}]}
-                    // onPress={Signin}
-                                  onPress={() => setModalVisible(true)}
-                >
-                    <Text style={styles.buttontextt}>{lang.Withdraw[LangId]}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.loginBtn}>
-                    <Text style={styles.buttontext}>{lang.dueAmount_470[LangId]}</Text>
-                </TouchableOpacity>
-            </View>
-
-
-            <View style={{flexDirection: 'row', marginTop: 0}}>
-                <Text style={[styles.buttontext, {color: 'gray', marginLeft: 20}]}>{lang.Yesterday[LangId]}</Text>
-                <Text style={[styles.buttontext, {color: 'gray', marginLeft: 39}]}>{lang.Today[LangId]}</Text>
-                <Text style={[styles.buttontext, {color: 'gray', marginLeft: 39}]}>{lang.Month[LangId]}</Text>
-                <Text style={[styles.buttontext, {color: 'gray', marginLeft: 39}]}>{lang.Year[LangId]}</Text>
+            <View style={{flexDirection: 'row', marginTop: 10}}>
+                <View
+                    style={[styles.loginBtn3, {backgroundColor: '#fff', borderWidth: 1, width: '40%'}]}>
+                    <Text style={[styles.buttontext, {color: 'gray'}]}>{lang.From_Company[LangId]}</Text>
+                    <Text style={[styles.buttontext, {color: 'black', marginTop: 10, fontSize: 28}]}>
+                        {`₹${riderInfo?.from_company ? riderInfo.from_company : '0'}`}
+                    </Text>
+                </View>
+                <View
+                    style={[styles.loginBtn3, {backgroundColor: '#fff', borderWidth: 1, width: '40%'}]}>
+                    <Text style={[styles.buttontext, {color: 'gray'}]}>{lang.To_Company[LangId]}</Text>
+                    <Text style={[styles.buttontext, {color: 'black', marginTop: 10, fontSize: 28}]}>
+                        {`₹${riderInfo?.to_company ? riderInfo.to_company : '0'}`}
+                    </Text>
+                </View>
             </View>
 
 
             <View style={{
-                marginLeft: 15,
-                flexDirection: 'row',
-                width: '80%',
-                backgroundColor: '#FFD7D7',
-                marginTop: 30,
-                height: '5%',
-                borderRadius: 10,
+                padding: 5,
+                margin: 14,
             }}>
-                <Text style={{marginLeft: 12, fontSize: 22, color: 'black',fontFamily: themes.fontFamily.Normal,}}>{lang.Bike[LangId]}</Text>
-                <Text style={{fontSize: 22, color: 'blue', marginLeft: 186,fontFamily: themes.fontFamily.Normal,}}>542 </Text>
-
+                <FlatList
+                    data={riderEarnings}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.booking_number}
+                />
             </View>
-            <Text style={{
-                marginLeft: 20,
-                fontSize: 19,
-                color: 'black',
-                marginTop: 20,
-                fontFamily: themes.fontFamily.Normal,
-            }}>{lang.Earning_Money[LangId]}</Text>
-            <View style={{flexDirection: 'row', marginTop: 10}}>
-                <View
-                    style={[styles.loginBtn3, {height: '40%', backgroundColor: '#fff', borderWidth: 1, width: '40%'}]}>
-                    <Text style={[styles.buttontext, {color: 'gray'}]}>{lang.From_Company[LangId]}</Text>
-                    <Text style={[styles.buttontext, {color: 'black', marginTop: 10, fontSize: 28}]}>₹ 154.00</Text>
-                </View>
-                <View
-                    style={[styles.loginBtn3, {height: '40%', backgroundColor: '#fff', borderWidth: 1, width: '40%'}]}>
-                    <Text style={[styles.buttontext, {color: 'gray'}]}>{lang.To_Company[LangId]}</Text>
-                    <Text style={[styles.buttontext, {color: 'black', marginTop: 10, fontSize: 28}]}>₹ 41.00</Text>
-                </View>
-            </View>
-
 
             <Modal
                 animationType="slide"
@@ -207,11 +239,22 @@ export default function Earning({navigation}) {
                                     marginTop: 20,
                                     color: '#0000CC',
                                 }}>Withdraw Requested</Text>
-                                <Text style={{color: 'gray', fontFamily: themes.fontFamily.Bold, fontSize: 13}}>Your withdraw request
+                                <Text style={{color: 'gray', fontFamily: themes.fontFamily.Bold, fontSize: 13}}>Your
+                                    withdraw request
                                     has submitted</Text>
-                                <Text style={{color: 'gray', fontFamily: themes.fontFamily.Bold, fontSize: 13, marginBottom: 0}}>to
+                                <Text style={{
+                                    color: 'gray',
+                                    fontFamily: themes.fontFamily.Bold,
+                                    fontSize: 13,
+                                    marginBottom: 0
+                                }}>to
                                     Tallo Team. You will notified once</Text>
-                                <Text style={{color: 'gray', fontFamily: themes.fontFamily.Bold, fontSize: 13, marginBottom: 20}}>payment
+                                <Text style={{
+                                    color: 'gray',
+                                    fontFamily: themes.fontFamily.Bold,
+                                    fontSize: 13,
+                                    marginBottom: 20
+                                }}>payment
                                     is proceed</Text>
                                 <TouchableOpacity style={styles.loginBtn}
                                 >
@@ -293,7 +336,7 @@ const styles = StyleSheet.create({
     },
     loginBtn3: {
         width: '50%',
-        height: 45,
+        height: 100,
         marginLeft: 20,
         marginRight: 10,
         alignItems: 'center',
@@ -302,7 +345,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         backgroundColor: 'white',
         color: '#000000',
-        marginBottom: '10%',
         borderRadius: 15,
         borderColor: 'grey',
         borderWidth: 0.1,
@@ -317,6 +359,136 @@ const styles = StyleSheet.create({
         color: '#F67321',
         fontSize: 17,
         fontFamily: themes.fontFamily.Bold,
+    },
+
+    item: {
+        backgroundColor: '#fff',
+        padding: 3,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#F1F1F1',
+        marginHorizontal: 0,
+        marginVertical: 10,
+    },
+
+    list: {
+        flex: 1,
+        marginTop: 20,
+    },
+    descriptionContainer: {
+        flexDirection: 'row',
+        paddingRight: 50,
+    },
+    image: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+    },
+    textDescription: {
+        marginLeft: 10,
+        color: 'red',
+    },
+
+    cardInfoContainer: {
+        flexDirection: 'column',
+        marginStart: 1,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+    },
+    rowView: {
+        flexDirection: 'row',
+    },
+    startPointView: {
+        height: 30,
+        width: 25,
+        borderColor: 'white',
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    directionLineView: {
+        height: 70,
+        width: 25,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    verticalLine: {
+        borderColor: 'lightgray',
+        borderWidth: 2,
+        height: '100%',
+    },
+    endingPointView: {
+        height: 25,
+        width: 25,
+        borderColor: 'white',
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    infoView: {
+        flex: 1,
+    },
+    pickUpView: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+    },
+    horizontalLine: {
+        borderBottomColor: '#F0F0F0',
+        borderBottomWidth: 1,
+        height: 3,
+        flexDirection: 'row',
+        marginBottom: 15,
+    },
+    bottomBorder: {
+        borderBottomColor: '#F0F0F0',
+        borderBottomWidth: 1,
+        height: 3,
+        flexDirection: 'row',
+        marginVertical: 5,
+        marginHorizontal: 15,
+    },
+    profileContainer: {
+        marginHorizontal: 12,
+        flex: 1,
+    },
+    profileView: {
+        marginTop: 8,
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    profileCenter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    userProfilePic: {
+        width: 45,
+        height: 45,
+        marginTop: 0,
+        marginStart: 0,
+        marginRight: 10,
+        borderRadius: 5,
+    },
+    profilePicView: {
+        alignItems: 'flex-start',
+    },
+    profileTitle: {
+        color: 'black',
+        fontSize: 16,
+        fontFamily: 'Baloo2-Bold'
+    },
+    profileColumnCenter: {
+        alignItems: 'center',
+    },
+    ratingCount: {
+        marginLeft: 5,
+        color: '#f1c40f',
+        fontSize: 16,
+        fontFamily: 'Baloo2-Regular'
     },
 
 });

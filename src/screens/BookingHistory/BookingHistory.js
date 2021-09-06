@@ -67,7 +67,8 @@ export default function BookingHistory({navigation}) {
         if (img == 'true') {
             navigate('RiderStatusOnline1');
         } else {
-            navigate('Dashboard');
+            navigation.goBack()
+            //navigate('Dashboard');
         }
 
     }
