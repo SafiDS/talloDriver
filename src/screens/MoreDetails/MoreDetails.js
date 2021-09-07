@@ -313,8 +313,9 @@ export default function MoreDetails({navigation}) {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 30}}
-                                      onPress={() => {
-                                          navigateScreen(navigation, 'RiderDetails');
+                        onPress={() => {
+                            navigation.navigate('RiderDetails', { isEdit:true })
+                                        //   navigateScreen(navigation, 'RiderDetails');
                                       }}>
                         <Ionicons name="help-circle" size={22} color="black"/>
                         <Text style={{
