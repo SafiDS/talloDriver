@@ -22,18 +22,26 @@ import {navigate, navigateScreen} from '../../Tools/NavigationServices';
 import {removeFromStorage} from '../../utils/AccessStorage';
 import lang from '../../language/lang_values';
 import {themes} from '../../utils';
+import {useDispatch, useSelector} from "react-redux";
 
 
 export default function MoreDetails({navigation}) {
 
+    const dispatch = useDispatch();
+    let user_info1 = useSelector((state) => {
+        console.log(state,"state")
+        return state.SignIn.User_info;
+    });
+
     const [image, setimage] = useState('');
     const [LangId, setLangId] = useState('');
+
+    const [riderInfo, setRiderInfo] = useState({});
+
 
 
     React.useEffect(() => {
         getdata();
-
-
         const unsubscribe = navigation.addListener('focus', () =>
             refreshPage(),
         );
@@ -63,6 +71,24 @@ export default function MoreDetails({navigation}) {
         if (!lanid) {
         } else {
             setLangId(lanid);
+        }
+
+        if (user_info1 != "") {
+            console.log("user_info in MoreDetails", user_info1);
+            setRiderInfo(user_info1.rider_info)
+            // setRiderId(user_info1.rider_info.rider_id);
+            // setPhone(user_info1.rider_info.phone);
+            // setCity(user_info1.rider_info.city);
+            // setName(user_info1.rider_info.full_name);
+            // setDate(user_info1.rider_info.dob);
+            // setEmail(user_info1.rider_info.email);
+            // setAadhar(user_info1.rider_info.aadharcard_number);
+            // setVehicleNo(user_info1.rider_info.rc_number);
+            // setGender(user_info1.rider_info.gender);
+            // setLicense(user_info1.rider_info.driving_license_number);
+            // setPanNO(user_info1.rider_info.pancard_number);
+            // setInNO(user_info1.rider_info.insurance_number);
+            // setProfile(user_info1.rider_info.profile_image);
         }
 
     }
@@ -184,22 +210,26 @@ export default function MoreDetails({navigation}) {
                     </View>
 
 
-                    <View style={{flexDirection: 'row', marginTop: 10, marginBottom: 10}}>
+                    <View style={{flexDirection: 'row',
+                        justifyContent:'space-between',
+                        marginHorizontal:20,
+                        marginTop: 10, marginBottom: 10}}>
 
                         <Text style={[styles.logintext, {
                             fontSize: 16,
                             color: 'white',
                             justifyContent: 'space-between',
-                            marginRight: 30,
                             fontFamily: themes.fontFamily.Bold,
+                            flex:1
                         }]}>{lang.Total_earnings[LangId]}</Text>
                         <Text
                             style={{
                                 color: 'white',
                                 fontFamily: themes.fontFamily.Bold,
                                 fontSize: 16,
-                                marginLeft: 160
-                            }}> 4578.00</Text>
+                            }}>
+                            {riderInfo?.total_earnings ? riderInfo.total_earnings : '0'}
+                        </Text>
                     </View>
 
 
@@ -213,7 +243,9 @@ export default function MoreDetails({navigation}) {
                             color: 'white',
                             marginLeft: 20,
                             fontFamily: themes.fontFamily.Bold,
-                        }}>8452</Text>
+                        }}>
+                            {riderInfo?.total_kms ? riderInfo.total_kms : '0'}
+                        </Text>
                         <Text style={{
                             marginRight: 10,
                             fontSize: 16,
@@ -229,7 +261,9 @@ export default function MoreDetails({navigation}) {
                             color: 'white',
                             fontFamily: themes.fontFamily.Bold,
                             marginLeft: 20,
-                        }}>234</Text>
+                        }}>
+                            {riderInfo?.total_rides ? riderInfo.total_rides : '0'}
+                        </Text>
                         <Text style={{
                             marginRight: 10, fontSize: 16, color: 'white',
                             fontFamily: themes.fontFamily.Normal
@@ -243,7 +277,9 @@ export default function MoreDetails({navigation}) {
                             fontFamily: themes.fontFamily.Bold,
                             marginBottom: 5,
                             marginLeft: 20,
-                        }}>4.5</Text>
+                        }}>
+                            {riderInfo?.total_ratings ? riderInfo.total_ratings : '0'}
+                        </Text>
                         <Text style={{
                             marginRight: 10, fontSize: 16, color: 'white',
                             fontFamily: themes.fontFamily.Normal
@@ -313,8 +349,9 @@ export default function MoreDetails({navigation}) {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 30}}
-                                      onPress={() => {
-                                          navigateScreen(navigation, 'RiderDetails');
+                        onPress={() => {
+                            navigation.navigate('RiderDetails', { isEdit:true })
+                                        //   navigateScreen(navigation, 'RiderDetails');
                                       }}>
                         <Ionicons name="help-circle" size={22} color="black"/>
                         <Text style={{

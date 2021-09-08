@@ -22,19 +22,21 @@ import lang from '../../language/lang_values';
 import Geolocation from '@react-native-community/geolocation';
 import {getDefaultLocale} from 'react-datepicker';
 import {themes} from '../../utils';
+import axios from "axios";
 
 const origin = {latitude: 13.082680, longitude: 80.270721};
 
 
 export default function Dashboard({navigation}) {
     const dispatch = useDispatch();
-    // let user_info = useSelector(state => {
-    //     console.log('State: ', state);
-    //     return state.SignIn.User_info;
-    //   });
     let filter = useSelector(state => {
         //console.log('State: ', state);
         return state.SignIn.data;
+    });
+
+    let user_info1 = useSelector((state) => {
+        console.log(state, "state")
+        return state.SignIn.User_info;
     });
     // console.log("Info++",filter)
 
@@ -92,6 +94,7 @@ export default function Dashboard({navigation}) {
             }
         };
         getdata();
+        getToken();
         requestLocationPermission();
 
 
@@ -140,6 +143,34 @@ export default function Dashboard({navigation}) {
         }
 
 
+    }
+
+    const getToken = async () => {
+        let Token = await getItemFromStorage('Token');
+        if (user_info1 != "") {
+            const riderData = {
+                rider_id: user_info1.rider_info.rider_id,
+                devicetoken: Token
+            }
+
+            const config = {
+                method: 'post',
+                url: 'https://www.tallo.in/dev/was/rider_devicetoken_update',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: JSON.stringify(riderData)
+            };
+
+            axios(config)
+                .then((response) => {
+                    console.log("Token Updated")
+                    alert("Token Updated")
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 
 
@@ -424,7 +455,11 @@ export default function Dashboard({navigation}) {
                                     }
 
                                     <View style={{flexDirection: 'column'}}>
-                                        <Text style={{fontFamily: themes.fontFamily.Bold, fontSize: 16, marginStart: 10}}>{name}</Text>
+                                        <Text style={{
+                                            fontFamily: themes.fontFamily.Bold,
+                                            fontSize: 16,
+                                            marginStart: 10
+                                        }}>{name}</Text>
                                         <Text style={{
                                             fontFamily: themes.fontFamily.Normal,
                                             color: 'grey',
